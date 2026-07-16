@@ -39,7 +39,7 @@ describe("analyzeRepository", () => {
     ]));
     vi.useRealTimers();
 
-    expect(result.projectType).toBe("agent");
+    expect(result.projectType).toBe("unknown");
     expect(result.findings).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "guidance-file", kind: "strength" }),
       expect.objectContaining({

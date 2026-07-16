@@ -21,6 +21,7 @@ describe("parseGitHubUrl", () => {
     "https://gitlab.com/acme/launchpad",
     "https://github.com/acme/launchpad/issues",
     "https://github.com/acme",
+    "https://github.com/acme/%E0%A4%A",
     "not a url",
   ])("rejects unsupported input: %s", (value) => {
     expect(() => parseGitHubUrl(value)).toThrow(GitHubError);

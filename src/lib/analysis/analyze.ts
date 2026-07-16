@@ -164,6 +164,14 @@ const CATEGORY_LABELS: Record<FindingCategory, string> = {
   safety: "Quality & safety",
 };
 
+const CATEGORY_MAX_POINTS: Record<FindingCategory, number> = STRENGTH_RULES.reduce(
+  (totals, rule) => {
+    totals[rule.category] += rule.points;
+    return totals;
+  },
+  { guidance: 0, implementation: 0, skills: 0, safety: 0 },
+);
+
 function matchRule(rule: Rule, files: RepositoryFile[]) {
   for (const file of files) {
     if (rule.pathPattern && !rule.pathPattern.test(file.path)) continue;
@@ -183,7 +191,11 @@ function matchRule(rule: Rule, files: RepositoryFile[]) {
 
 function classifyProject(files: RepositoryFile[]): ProjectType {
   const paths = files.map((file) => file.path.toLowerCase());
-  const combined = files.map((file) => file.content.slice(0, 20_000)).join("\n");
+  const implementationFiles = files.filter((file) =>
+    !/(?:^|\/)(?:agents|claude|cursor|gemini)\.md$/i.test(file.path)
+    && !/(?:^|\/)(?:skills?|prompts?|\.claude|\.cursor)\//i.test(file.path),
+  );
+  const combined = implementationFiles.map((file) => file.content.slice(0, 20_000)).join("\n");
   const web = /(?:next|react|vue|svelte|angular|express|fastapi|django)/i.test(combined)
     || paths.some((path) => /(?:pages|app|routes?)\//.test(path));
   const cli = /\b(?:commander|yargs|click|typer|argparse|cobra)\b/i.test(combined)
@@ -304,7 +316,7 @@ export function analyzeRepository(snapshot: RepositorySnapshot): AnalysisResult 
 
   const categories: CategoryScore[] = (Object.keys(CATEGORY_LABELS) as FindingCategory[]).map((category) => {
     const raw = strengths.filter((finding) => finding.category === category).reduce((sum, finding) => sum + finding.points, 0);
-    const score = Math.min(100, raw);
+    const score = Math.min(100, Math.round((raw / CATEGORY_MAX_POINTS[category]) * 100));
     return {
       category,
       label: CATEGORY_LABELS[category],

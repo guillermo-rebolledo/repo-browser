@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import Link from "next/link";
 import type { AnalysisResult, Finding, FindingCategory } from "@/lib/analysis/types";
 
 type ViewState =
@@ -72,10 +73,10 @@ function Results({ result, onReset }: { result: AnalysisResult; onReset: () => v
   return (
     <main className="results-shell">
       <header className="topbar">
-        <a className="brand" href="/" aria-label="AgentLens home">
+        <Link className="brand" href="/" aria-label="AgentLens home">
           <span className="brand-mark">A</span>
           <span>AgentLens</span>
-        </a>
+        </Link>
         <button className="text-button" onClick={onReset}>Analyze another repo</button>
       </header>
 
@@ -180,10 +181,10 @@ export function Auditor() {
   return (
     <main className="landing">
       <header className="topbar landing-bar">
-        <a className="brand" href="/" aria-label="AgentLens home">
+        <Link className="brand" href="/" aria-label="AgentLens home">
           <span className="brand-mark">A</span>
           <span>AgentLens</span>
-        </a>
+        </Link>
         <span className="privacy-badge"><i /> Local rules · No LLM</span>
       </header>
 

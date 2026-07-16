@@ -69,8 +69,14 @@ export function parseGitHubUrl(value: string): { owner: string; repo: string } {
     throw new GitHubError("Use a repository URL such as https://github.com/owner/repository.", "INVALID_URL", 400);
   }
 
-  const owner = decodeURIComponent(segments[0]);
-  const repo = decodeURIComponent(segments[1]).replace(/\.git$/i, "");
+  let owner: string;
+  let repo: string;
+  try {
+    owner = decodeURIComponent(segments[0]);
+    repo = decodeURIComponent(segments[1]).replace(/\.git$/i, "");
+  } catch {
+    throw new GitHubError("The GitHub owner or repository name is invalid.", "INVALID_URL", 400);
+  }
   const validPart = /^[A-Za-z0-9_.-]+$/;
   if (!owner || !repo || !validPart.test(owner) || !validPart.test(repo)) {
     throw new GitHubError("The GitHub owner or repository name is invalid.", "INVALID_URL", 400);
